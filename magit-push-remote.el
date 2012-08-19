@@ -130,8 +130,8 @@ fixed here; see https://github.com/magit/magit/pull/440."
          (used-remote
           (if (or current-prefix-arg
                   (not auto-remote))
-              (magit-read-remote* (format "Push %s to remote" branch)
-                                  auto-remote t)
+              (magit-pr-read-remote (format "Push %s to remote" branch)
+                                    auto-remote t)
             auto-remote))
          (remote-branch
           (or (and (>= (prefix-numeric-value current-prefix-arg) 16)
@@ -261,7 +261,7 @@ fixed here; see https://github.com/magit/magit/pull/440."
 ;; * add REQUIRE-MATCH and
 ;; * deal with `completing-read's strange understanding of REQUIRE-MATCH
 ;;
-(defun magit-read-remote* (&optional prompt def require-match)
+(defun magit-pr-read-remote (&optional prompt def require-match)
   (let* ((prompt (or prompt "Remote"))
          (def (or def (magit-guess-remote)))
          (remotes (magit-git-lines "remote"))
