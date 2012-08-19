@@ -203,7 +203,10 @@ fixed here; see https://github.com/magit/magit/pull/440."
                     "--abbrev-commit"
                     (format "--abbrev=%s" magit-sha1-abbrev-length)
                     "--pretty=oneline"))
-             (no-commit (not head)))
+             (no-commit (not head))
+             (merge-heads (magit-file-lines (concat (magit-git-dir) "MERGE_HEAD")))
+             (rebase (magit-rebase-info))
+             (staged (or no-commit (magit-anything-staged-p))))
         (when magit-push-remote-debug
           (message "magit-refresh-status")
           (message "  mode:               %s" magit-push-remote-mode)
@@ -229,16 +232,13 @@ fixed here; see https://github.com/magit/magit/pull/440."
                         (abbreviate-file-name default-directory)))
         (insert (format "Head:     %s\n"
                         (if no-commit "nothing commited (yet)" head)))
-        (let ((merge-heads (magit-file-lines (concat (magit-git-dir)
-                                                     "MERGE_HEAD"))))
-          (if merge-heads
-              (insert (format "Merging:   %s\n"
-                              (mapconcat 'identity
-                                         (mapcar 'magit-name-rev merge-heads)
-                                         ", ")))))
-        (let ((rebase (magit-rebase-info)))
-          (if rebase
-              (insert (apply 'format "Rebasing: onto %s (%s of %s); Press \"R\" to Abort, Skip, or Continue\n" rebase))))
+        (when merge-heads
+          (insert (format "Merging:   %s\n"
+                          (mapconcat 'identity
+                                     (mapcar 'magit-name-rev merge-heads)
+                                     ", "))))
+        (when rebase
+          (insert (apply 'format "Rebasing: onto %s (%s of %s); Press \"R\" to Abort, Skip, or Continue\n" rebase)))
         (insert "\n")
         (magit-git-exit-code "update-index" "--refresh")
         (magit-insert-stashes)
@@ -249,10 +249,9 @@ fixed here; see https://github.com/magit/magit/pull/440."
         (when magit-push-remote-mode
           (magit-insert-push-remote-unpulled-commits
            push-remote push-remote-branch))
-        (let ((staged (or no-commit (magit-anything-staged-p))))
-          (magit-insert-unstaged-changes
-           (if staged "Unstaged changes:" "Changes:"))
-          (magit-insert-staged-changes staged no-commit))
+        (magit-insert-unstaged-changes
+         (if staged "Unstaged changes:" "Changes:"))
+        (magit-insert-staged-changes staged no-commit)
         (magit-insert-unpushed-commits remote remote-branch)
         (when magit-push-remote-mode
           (magit-insert-push-remote-unpushed-commits
