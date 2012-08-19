@@ -57,25 +57,38 @@
 ;;   +------------+                                      +------------+
 
 ;; This package modifies magit to automatically detect whether the
-;; latter workflow is used and if so provides additional information
-;; related to "personal remote" and push to that remote by default.
+;; latter workflow is used and; if so provide additional information
+;; related to that "personal remote" and push it by default.
 
-;; To use add this to your .emacs.el:
-;;   (require 'magit-push-remote)
-;;   (add-hook 'magit-mode-hook 'turn-on-magit-push-remote)
+;; Loading this library redefines the command `magit-push' which is a
+;; good thing because the official version contains several bugs; see
+;; https://github.com/magit/magit/pull/440.  It's behaviour differs
+;; from that of the official version even when no push remote exists
+;; in the current repository - it fixes the bugs.  The original
+;; version from `magit.el' is available as `magit-orig-push'.
+
+;; The information displayed by `magit-refresh-status' is also changed
+;; by this plug-in - but only in repositories that actually have a
+;; push remote.  Therefor it is usually save to enable
+;; `magit-push-remote-mode' in all Magit buffers:
 ;;
-;; and
+;;   (add-hook 'magit-mode-hook 'turn-on-magit-push-remote)
+
+;; `magit-push' and `magit-refresh-status' determine the push remote
+;; based on it's name.  A good name is e.g. your username.  Again it
+;; makes sense to set this globally:
+;;
 ;;   git config --global magit.defaultpushremote <REMOTE_NAME>
-;; or
+
+;; If you want to use a different name in some repositories, that is
+;; also possible:
+;;
 ;;   git config magit.pushremote <REMOTE_NAME>
 
-;; *** This library REDEFINES `magit-push' DEFINED IN `magit.el'.
-;; *** - add support for the magical push remote
-;; *** - fix various bugs; see https://github.com/magit/magit/pull/440
+;; Now read `magit-push's doc-string and you are ready to go.
 
 ;;; TODO:
 ;; TODO test
-;; TODO improve documentation
 ;; TODO do not redefine `magit-push', instead define `magit-push*'
 ;;      users can still use `fset'
 ;; TODO get bugfixes merged upstream (#440)
