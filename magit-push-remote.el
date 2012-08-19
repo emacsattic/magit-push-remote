@@ -29,15 +29,15 @@
 
 ;; WIP seems usable but don't complain if something goes wrong.
 
-;; This plug-in provides support for an additional default remote which
-;; when pushing is used instead of the "merge" default specified by the
-;; git-config(1) option `branch.<name>.remote'.
+;; This plug-in provides support for an additional default remote
+;; which when pushing is used instead of the "merge" default specified
+;; by the git-config(1) option `branch.<name>.remote'.
 
-;; Together `branch.<name>.remote' and `branch.<name>.merge' sets the
+;; Together `branch.<name>.remote' and `branch.<name>.merge' set the
 ;; default used by git-pull(1) and git-push(1).  Like their git
-;; counterparts `magit-push' and `magit-pull' use these options. So does
-;; `magit-status' which displays commits not pushed to or not pulled from
-;; the default remote/branch.
+;; counterparts `magit-push' and `magit-pull' use these options. So
+;; does `magit-status' which displays commits not pushed to or not
+;; pulled from the default remote/branch.
 
 ;; This works nicely if commits most often flow like this:
 ;;
@@ -50,15 +50,15 @@
 ;; local repository like this:
 ;;
 ;;   +------------+            +------------+            +------------+
-;;   |  upstream  | -- pull -> |   local    |            |     my     |
+;;   |  upstream  | -- pull -> |   local    |            |    your    |
 ;;   |    repo    |            |    repo    | -- push -> |   public   |
 ;;   |            |            +------------+            |    repo    |
 ;;   |            | <- merge pull reguest -------------- |            |
 ;;   +------------+                                      +------------+
 
-;; This package modifies magit to automatically detect whether the latter
-;; workflow is used and if so provides additional information related to
-;; "personal remote" and push to that remote by default.
+;; This package modifies magit to automatically detect whether the
+;; latter workflow is used and if so provides additional information
+;; related to "personal remote" and push to that remote by default.
 
 ;; To use add this to your .emacs.el:
 ;;   (require 'magit-push-remote)
@@ -109,24 +109,27 @@
 (magit-define-command push ()
   "Push the current branch to a remote repository.
 
-With a single prefix argument ask the user what branch to push to.
-With two or more prefix arguments also ask the user what remote to push to.
-Otherwise determine the remote and branch as described below.
-If the remote can not be determined ask the user.  If the remote branch
-cannot be determined push without specifing the remote branch explicitly.
+With a single prefix argument ask the user what branch to push
+to.  With two or more prefix arguments also ask the user what
+remote to push to.  Otherwise determine the remote and branch as
+described below.  If the remote can not be determined ask the
+user.  If the remote branch cannot be determined push without
+specifing the remote branch explicitly.
 
-When `magit-push-remote-mode' is turned on and the current repository has a
-push-remote use that.  See the modes doc-string for how the push-remote is
-determined.
+When `magit-push-remote-mode' is turned on and the current
+repository has a push-remote use that.  See the modes doc-string
+for how the push-remote is determined.
 
-Otherwise use the remote and branch specified by the git-config(1) options
-`branch.<name>.remote' and `branch.<name>.merge'.
+Otherwise use the remote and branch specified by the
+git-config(1) options `branch.<name>.remote' and
+`branch.<name>.merge'.
 
-This function is redefined in `magit-push-remote.el' replacing the
-original definition in `magit.el'.  It's behaviour differs even if
-`magit-push-remote-mode' is turned off.  These differences are due to
-bugs in the original implementation being fixed here.  See the comment
-before this function's definition for more information."
+This function is redefined in `magit-push-remote.el' replacing
+the original definition in `magit.el'.  It's behaviour differs
+even if `magit-push-remote-mode' is turned off.  These
+differences are due to bugs in the original implementation being
+fixed here.  See the comment before this function's definition
+for more information."
   (interactive)
   (let* ((branch (or (magit-get-current-branch)
                      (error "Don't push a detached head.  That's gross")))
