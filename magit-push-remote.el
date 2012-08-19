@@ -95,6 +95,9 @@
 
 (defcustom magit-push-remote-debug nil "" :type 'boolean :group 'magit)
 
+(unless (fboundp 'magit-orig-push)
+  (fset 'magit-orig-push 'magit-push))
+
 ;; REDEFINE `magit-push' DEFINED IN `magit.el'.
 ;;
 (magit-define-command push ()
