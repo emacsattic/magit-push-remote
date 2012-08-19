@@ -69,6 +69,9 @@
 ;; or
 ;;   git config magit.pushremote <REMOTE_NAME>
 
+;; *** This library REDEFINES `magit-push' DEFINED IN `magit.el'.
+;; *** - add support for the magical push remote
+;; *** - fix various bugs; see https://github.com/magit/magit/pull/440
 
 ;;; TODO:
 ;; TODO test
@@ -92,27 +95,15 @@
 
 (defcustom magit-push-remote-debug nil "" :type 'boolean :group 'magit)
 
-;; REDEFINE `magit-push' DEFINED IN `magit.el'
+;; REDEFINE `magit-push' DEFINED IN `magit.el'.
 ;;
-;; * add support for the magical push remote
-;; * also fix various bugs
-;;   * do not push to `branch.b.merge' unless pushing to `branch.b.remote'
-;;   * set the upstream remote and branch using just `--set-upstream',
-;;     and only when `magit-set-upstream-on-push' calls for it
-;;     * do not ignore `magit-set-upstream-on-push' by setting `branch.b.merge'
-;;       when `branch.b.remote' and `remote.origin.url' are unset,
-;;       and no prefix argument is used
-;;     * do not ignore `magit-set-upstream-on-push' by setting `branch.b.remote'
-;;       when `branch.b.remote' and `remote.origin.url' are unset
-;;     * This limits setting the upstream to git >= 1.7.0 but
-;;       then at least it is done correctly
 (magit-define-command push ()
   "Push the current branch to a remote repository.
 
 With a single prefix argument ask the user what branch to push
 to.  With two or more prefix arguments also ask the user what
 remote to push to.  Otherwise determine the remote and branch as
-described below.  If the remote can not be determined ask the
+described below.  If the remote cannot be determined ask the
 user.  If the remote branch cannot be determined push without
 specifing the remote branch explicitly.
 
@@ -128,8 +119,7 @@ This function is redefined in `magit-push-remote.el' replacing
 the original definition in `magit.el'.  It's behaviour differs
 even if `magit-push-remote-mode' is turned off.  These
 differences are due to bugs in the original implementation being
-fixed here.  See the comment before this function's definition
-for more information."
+fixed here; see https://github.com/magit/magit/pull/440."
   (interactive)
   (let* ((branch (or (magit-get-current-branch)
                      (error "Don't push a detached head.  That's gross")))
@@ -270,6 +260,7 @@ for more information."
 ;; Like `magit-read-remote' but
 ;; * add REQUIRE-MATCH and
 ;; * deal with `completing-read's strange understanding of REQUIRE-MATCH
+;;
 (defun magit-read-remote* (&optional prompt def require-match)
   (let* ((prompt (or prompt "Remote"))
          (def (or def (magit-guess-remote)))
