@@ -257,10 +257,6 @@ fixed here; see https://github.com/magit/magit/pull/440."
           (match-string 1 remote-branch)
         branch)))) ; always default to the local name
 
-;; Like `magit-read-remote' but
-;; * add REQUIRE-MATCH and
-;; * deal with `completing-read's strange understanding of REQUIRE-MATCH
-;;
 (defun magit-pr-read-remote (&optional prompt def require-match)
   (let* ((prompt (or prompt "Remote"))
          (def (or def (magit-guess-remote)))
@@ -273,10 +269,6 @@ fixed here; see https://github.com/magit/magit/pull/440."
             (error "No remote selected")
           nil)
       reply)))
-
-;; Instead we could redefine `magit-[unpulled|unpushed]-commits
-;; but we have already redefined enough and once we don't have
-;; to patch `magit-refresh-status' anymore it would stop working.
 
 (magit-define-inserter push-remote-unpulled-commits (remote remote-branch)
   (when remote
@@ -301,20 +293,7 @@ fixed here; see https://github.com/magit/magit/pull/440."
   "Push remote support for Magit."
   :lighter "" :retire 'magit-push-remote
   (or (derived-mode-p 'magit-mode)
-      (error "This mode only makes sense with magit"))
-  ;; We have to patch `magit-refresh-status' anyway so
-  ;; we don't use these hooks which would be cleaner.
-  ;; (cond (magit-push-remote-mode
-  ;;        (add-hook 'magit-after-insert-unpulled-commits-hook
-  ;;                  'magit-insert-push-remote-unpulled-commits nil t)
-  ;;        (add-hook 'magit-after-insert-unpushed-commits-hook
-  ;;                  'magit-insert-push-remote-unpushed-commits nil t))
-  ;;       (t
-  ;;        (remove-hook 'magit-after-insert-unpulled-commits-hook
-  ;;                     'magit-insert-push-remote-unpulled-commits t)
-  ;;        (remove-hook 'magit-after-insert-unpushed-commits-hook
-  ;;                     'magit-insert-push-remote-unpushed-commits t)))
-  )
+      (error "This mode only makes sense with magit")))
 
 ;;;###autoload
 (defun turn-on-magit-push-remote ()
