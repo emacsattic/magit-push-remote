@@ -206,7 +206,8 @@ fixed here; see https://github.com/magit/magit/pull/440."
              (no-commit (not head))
              (merge-heads (magit-file-lines (concat (magit-git-dir) "MERGE_HEAD")))
              (rebase (magit-rebase-info))
-             (staged (or no-commit (magit-anything-staged-p))))
+             (staged (or no-commit (magit-anything-staged-p)))
+             (align (if push-remote 12 9)))
         (when magit-push-remote-debug
           (message "magit-refresh-status")
           (message "  mode:               %s" magit-push-remote-mode)
@@ -219,26 +220,27 @@ fixed here; see https://github.com/magit/magit/pull/440."
           (message "  push-remote-branch: %s" push-remote-branch)
           (message "  push-remote-string: %s" push-remote-string)
           (message "  head:               %s" head))
-        (when remote-string
-          (insert "Remote:   " remote-string "\n"))
-        ;; If it wasn't for this we wouldn't have to patch this function.
-        ;; TODO ask upstream for a mechanism to insert header lines
-        ;; similar to that for sections.
-        (when push-remote-string
-          (insert "Personal: " push-remote-string "\n"))
-        (insert (format "Local:    %s %s\n"
-                        (propertize (magit--bisect-info-for-status branch)
-                                    'face 'magit-branch)
-                        (abbreviate-file-name default-directory)))
-        (insert (format "Head:     %s\n"
-                        (if no-commit "nothing commited (yet)" head)))
+        (when remote
+          (if push-remote
+              (progn
+                (magit-insert-status-line "Pull Remote" align remote-string)
+                (magit-insert-status-line "Push Remote" align push-remote-string))
+            (magit-insert-status-line "Remote" align remote-string)))
+        (magit-insert-status-line
+         "Local" align "%s %s"
+         (propertize (magit--bisect-info-for-status branch) 'face 'magit-branch)
+         (abbreviate-file-name default-directory))
+        (magit-insert-status-line
+         "Head" align (if no-commit "nothing commited (yet)" head))
         (when merge-heads
-          (insert (format "Merging:   %s\n"
-                          (mapconcat 'identity
-                                     (mapcar 'magit-name-rev merge-heads)
-                                     ", "))))
+          (magit-insert-status-line
+           "Merging" align
+           (mapconcat 'identity (mapcar 'magit-name-rev merge-heads) ", ")))
         (when rebase
-          (insert (apply 'format "Rebasing: onto %s (%s of %s); Press \"R\" to Abort, Skip, or Continue\n" rebase)))
+          (apply 'magit-insert-status-line
+                 "Rebasing" align
+                 "onto %s (%s of %s); Press \"R\" to Abort, Skip, or Continue"
+                 rebase))
         (insert "\n")
         (magit-git-exit-code "update-index" "--refresh")
         (magit-insert-stashes)
@@ -287,6 +289,10 @@ fixed here; see https://github.com/magit/magit/pull/440."
             (error "No remote selected")
           nil)
       reply)))
+
+(defun magit-insert-status-line (title align string &rest args)
+  (insert title ":" (make-string (max 1 (- align (length title))) 32)
+          (apply 'format string args) "\n"))
 
 (magit-define-inserter push-remote-unpulled-commits (remote remote-branch)
   (when remote
