@@ -95,6 +95,23 @@
 
 (require 'magit)
 
+;;;###autoload
+(define-minor-mode magit-push-remote-mode
+  "Push remote support for Magit."
+  :lighter "" :retire 'magit-push-remote
+  (or (derived-mode-p 'magit-mode)
+      (error "This mode only makes sense with magit")))
+
+;;;###autoload
+(defun turn-on-magit-push-remote ()
+  "Unconditionally turn on `magit-push-remote-mode'."
+  (magit-push-remote-mode 1))
+
+(defvar magit-push-remote-debug nil)
+(defun toggle-magit-push-remote-debug ()
+  (interactive)
+  (setq magit-push-remote-debug (not magit-push-remote-debug)))
+
 (unless (fboundp 'magit-orig-push)
   (fset 'magit-orig-push 'magit-push))
 
@@ -333,25 +350,8 @@ fixed here; see https://github.com/magit/magit/pull/440."
   (magit-insert-unpushed-commits-internal
    remote remote-branch "Unpushed commits:"))
 
-;;;###autoload
-(define-minor-mode magit-push-remote-mode
-  "Push remote support for Magit."
-  :lighter "" :retire 'magit-push-remote
-  (or (derived-mode-p 'magit-mode)
-      (error "This mode only makes sense with magit")))
-
-;;;###autoload
-(defun turn-on-magit-push-remote ()
-  "Unconditionally turn on `magit-push-remote-mode'."
-  (magit-push-remote-mode 1))
-
-(defvar magit-push-remote-debug nil)
-(defun toggle-magit-push-remote-debug ()
-  (interactive)
-  (setq magit-push-remote-debug (not magit-push-remote-debug)))
-
 (provide 'magit-push-remote)
 ;; Local Variables:
 ;; indent-tabs-mode: nil
 ;; End:
-;;; epkg.el ends here
+;;; magit-push-remote.el ends here
