@@ -67,6 +67,9 @@
 ;; in the current repository - it fixes the bugs.  The original
 ;; version from `magit.el' is available as `magit-orig-push'.
 
+;; `magit-push-tags' is also redefined here to default to the push
+;; remote and explicit selection of the remote to be used.
+
 ;; The information displayed by `magit-refresh-status' is also changed
 ;; by this plug-in - but only in repositories that actually have a
 ;; push remote.  Therefor it is usually save to enable
@@ -74,9 +77,9 @@
 ;;
 ;;   (add-hook 'magit-mode-hook 'turn-on-magit-push-remote)
 
-;; `magit-push' and `magit-refresh-status' determine the push remote
-;; based on it's name.  A good name is e.g. your username.  Again it
-;; makes sense to set this globally:
+;; The functions (re)defined here determine the push remote based on
+;; it's name.  A good name is e.g. your username.  Again it makes
+;; sense to set this globally:
 ;;
 ;;   git config --global magit.defaultpushremote <REMOTE_NAME>
 
