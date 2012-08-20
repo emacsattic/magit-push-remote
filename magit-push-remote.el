@@ -252,10 +252,13 @@ fixed here; see https://github.com/magit/magit/pull/440."
         (magit-insert-unstaged-changes
          (if staged "Unstaged changes:" "Changes:"))
         (magit-insert-staged-changes staged no-commit)
-        (magit-insert-unpushed-commits remote remote-branch)
-        (when magit-push-remote-mode
-          (magit-insert-push-remote-unpushed-commits
-           push-remote push-remote-branch))
+        (if push-remote
+            (progn
+              (magit-insert-pull-remote-unmerged-commits
+               remote remote-branch)
+              (magit-insert-push-remote-unpushed-commits
+               push-remote push-remote-branch))
+          (magit-insert-unpushed-commits remote remote-branch))
         (run-hooks 'magit-refresh-status-hook)))))
 
 (defun magit-get-push-remote (branch)
@@ -294,14 +297,22 @@ fixed here; see https://github.com/magit/magit/pull/440."
            (append magit-git-log-options
                    (list (format "HEAD..%s/%s" remote remote-branch))))))
 
-(magit-define-inserter push-remote-unpushed-commits (remote remote-branch)
+(defun magit-insert-unpushed-commits-internal (remote remote-branch display)
   (when remote
     (apply #'magit-git-section
            'unpushed
-           (format "Unpushed commits @ %s:" remote)
+           display
            'magit-wash-log "log"
            (append magit-git-log-options
                    (list (format "%s/%s..HEAD" remote remote-branch))))))
+
+(magit-define-inserter pull-remote-unmerged-commits (remote remote-branch)
+  (magit-insert-unpushed-commits-internal
+   remote remote-branch "Unmerged commits:"))
+
+(magit-define-inserter push-remote-unpushed-commits (remote remote-branch)
+  (magit-insert-unpushed-commits-internal
+   remote remote-branch "Unpushed commits:"))
 
 ;;;###autoload
 (define-minor-mode magit-push-remote-mode
