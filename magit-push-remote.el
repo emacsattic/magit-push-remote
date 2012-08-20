@@ -87,20 +87,6 @@
 
 ;; Now read `magit-push's doc-string and you are ready to go.
 
-;;; TODO:
-;; TODO test
-;; TODO do not redefine `magit-push', instead define `magit-push*'
-;;      users can still use `fset'
-;; TODO get bugfixes merged upstream (#440)
-;; TODO are all fixes in #440 also included here?
-;; TODO maybe get the whole thing merged upstream
-;; TODO also determine push remote based on it's url
-;; TODO also determine push remote based on push rights
-;; TODO what to do if we *also* have permission to push to the "merge" remote?
-;; TODO when user tries to push but there is no remote he has push rights for
-;;      automatically add personal remote if she has a fork on github or
-;;      else even offer to create it
-
 ;;; Code:
 
 (require 'magit)
