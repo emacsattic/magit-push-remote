@@ -97,7 +97,6 @@
 ;; TODO also determine push remote based on it's url
 ;; TODO also determine push remote based on push rights
 ;; TODO what to do if we *also* have permission to push to the "merge" remote?
-;; TODO if merge == personal, don't show twice
 ;; TODO when user tries to push but there is no remote he has push rights for
 ;;      automatically add personal remote if she has a fork on github or
 ;;      else even offer to create it
@@ -163,9 +162,11 @@ fixed here; see https://github.com/magit/magit/pull/440."
   (interactive)
   (let* ((branch (or (magit-get-current-branch)
                      (error "Don't push a detached head.  That's gross")))
-         (push-remote (and magit-push-remote-mode
-                           (magit-get-push-remote branch)))
          (pull-remote (magit-get-remote branch))
+         (push-name   (and magit-push-remote-mode
+                           pull-remote
+                           (magit-get-push-remote branch)))
+         (push-remote (unless (equal push-name pull-remote) push-name))
          (auto-remote (or push-remote pull-remote))
          (used-remote
           (if (or current-prefix-arg
