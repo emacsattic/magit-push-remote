@@ -94,8 +94,6 @@
 
 (require 'magit)
 
-(defcustom magit-push-remote-debug nil "" :type 'boolean :group 'magit)
-
 (unless (fboundp 'magit-orig-push)
   (fset 'magit-orig-push 'magit-push))
 
@@ -345,6 +343,11 @@ fixed here; see https://github.com/magit/magit/pull/440."
 (defun turn-on-magit-push-remote ()
   "Unconditionally turn on `magit-push-remote-mode'."
   (magit-push-remote-mode 1))
+
+(defvar magit-push-remote-debug nil)
+(defun toggle-magit-push-remote-debug ()
+  (interactive)
+  (setq magit-push-remote-debug (not magit-push-remote-debug)))
 
 (provide 'magit-push-remote)
 ;; Local Variables:
