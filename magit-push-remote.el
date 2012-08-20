@@ -6,6 +6,7 @@
 ;; Created: 20120613
 ;; Version: 0.1.0
 ;; Status: proof of concept
+;; Package-Requires: ((magit "1.1.1"))
 ;; Homepage: https://github.com/tarsius/magit-push-remote
 ;; Keywords: convenience
 
