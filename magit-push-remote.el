@@ -111,6 +111,30 @@
 (unless (fboundp 'magit-orig-push)
   (fset 'magit-orig-push 'magit-push))
 
+;; REDEFINE `magit-push-tags' DEFINED IN `magit.el'.
+;;
+(magit-define-command push-tags ()
+  "Push tags to a remote repository.
+
+Push tags to the current branch's remote.
+
+When `magit-push-remote-mode' is turned on and the current
+repository push to that remote instead.
+
+Otherwise push to \"origin\" or if that remote also doesn't exist
+but only a single remote is defined use that.  Otherwise or with
+a prefix argument ask the user what remote to use."
+  (interactive)
+  (let* ((branch  (magit-get-current-branch))
+         (remotes (magit-git-lines "remote"))
+         (remote  (or (and branch (magit-get-remote branch))
+                      (car (member  "origin" remotes))
+                      (and (= (length remotes) 1)
+                           (car remotes)))))
+    (when (or current-prefix-arg (not remote))
+      (setq remote (magit-pr-read-remote "Push to remote: ")))
+    (magit-run-git-async "push" remote "--tags")))
+
 ;; REDEFINE `magit-push' DEFINED IN `magit.el'.
 ;;
 (magit-define-command push ()
