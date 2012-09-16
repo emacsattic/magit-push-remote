@@ -204,12 +204,16 @@ fixed here; see https://github.com/magit/magit/pull/440."
                (and (eq magit-set-upstream-on-push t)
                     (yes-or-no-p "Set upstream while pushing? ")))
            (setq magit-custom-options
-                 (cons "--set-upstream" magit-custom-options))))
+                 (cons "-u" magit-custom-options))))
     (apply 'magit-run-git-async "push" "-v" used-remote
            (if remote-branch
                (format "%s:%s" branch remote-branch)
              branch)
-           magit-custom-options)))
+           magit-custom-options)
+    ;; In older Git versions (>= 1.6.6.1 ?) -u did set the remote but
+    ;; not the remote branch.
+    (when (and remote-branch (member "-u" magit-custom-options))
+      (magit-set remote-branch "branch" branch "merge"))))
 
 ;; REDEFINE `magit-refresh-status' DEFINED IN `magit.el'.
 ;;
