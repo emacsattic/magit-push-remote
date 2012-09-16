@@ -186,14 +186,6 @@ fixed here; see https://github.com/magit/magit/pull/440."
                  (magit-get-push-remote-branch branch))
                 ((equal used-remote pull-remote)
                  (magit-get "branch" branch "merge")))))
-    (when magit-push-remote-debug
-      (message "magit-push")
-      (message "  branch:        %s" branch)
-      (message "  push-remote:   %s" push-remote)
-      (message "  pull-remote:   %s" pull-remote)
-      (message "  auto-remote:   %s" auto-remote)
-      (message "  used-remote:   %s" used-remote)
-      (message "  remote-branch: %s" remote-branch))
     (cond (remote-branch)
           ((eq magit-set-upstream-on-push 'refuse)
            (error "Not pushing since no upstream has been set."))
@@ -202,6 +194,14 @@ fixed here; see https://github.com/magit/magit/pull/440."
                     (yes-or-no-p "Set upstream while pushing? ")))
            (setq magit-custom-options
                  (cons "-u" magit-custom-options))))
+    (when magit-push-remote-debug
+      (message "magit-push")
+      (message "  branch:        %s" branch)
+      (message "  push-remote:   %s" push-remote)
+      (message "  pull-remote:   %s" pull-remote)
+      (message "  auto-remote:   %s" auto-remote)
+      (message "  used-remote:   %s" used-remote)
+      (message "  remote-branch: %s" remote-branch))
     (apply 'magit-run-git-async "push" "-v" used-remote
            (if remote-branch
                (format "%s:%s" branch remote-branch)
