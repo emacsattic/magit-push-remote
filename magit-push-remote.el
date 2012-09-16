@@ -126,14 +126,19 @@ Otherwise push to \"origin\" or if that remote also doesn't exist
 but only a single remote is defined use that.  Otherwise or with
 a prefix argument ask the user what remote to use."
   (interactive)
-  (let* ((branch  (magit-get-current-branch))
-         (remotes (magit-git-lines "remote"))
-         (remote  (or (and branch (magit-get-remote branch))
-                      (car (member  "origin" remotes))
-                      (and (= (length remotes) 1)
-                           (car remotes)))))
+  (let* ((branch      (magit-get-current-branch))
+         (remotes     (magit-git-lines "remote"))
+         (pull-remote (and branch (magit-get-remote branch)))
+         (push-remote (and magit-push-remote-mode
+                           pull-remote
+                           (magit-get-push-remote branch)))
+         (remote      (or push-remote
+                          pull-remote
+                          (car (member "origin" remotes))
+                          (and (= (length remotes) 1)
+                               (car remotes)))))
     (when (or current-prefix-arg (not remote))
-      (setq remote (magit-read-remote "Push to remote: ")))
+      (setq remote (magit-read-remote "Push to remote" remote t)))
     (magit-run-git-async "push" remote "--tags")))
 
 ;; REDEFINE `magit-push' DEFINED IN `magit.el'.
