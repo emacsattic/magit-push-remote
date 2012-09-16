@@ -136,7 +136,7 @@ a prefix argument ask the user what remote to use."
                       (and (= (length remotes) 1)
                            (car remotes)))))
     (when (or current-prefix-arg (not remote))
-      (setq remote (magit-pr-read-remote "Push to remote: ")))
+      (setq remote (magit-read-remote "Push to remote: ")))
     (magit-run-git-async "push" remote "--tags")))
 
 ;; REDEFINE `magit-push' DEFINED IN `magit.el'.
@@ -176,7 +176,7 @@ fixed here; see https://github.com/magit/magit/pull/440."
          (used-remote
           (if (or current-prefix-arg
                   (not auto-remote))
-              (magit-pr-read-remote (format "Push %s to remote" branch)
+              (magit-read-remote (format "Push %s to remote" branch)
                                     auto-remote t)
             auto-remote))
          (remote-branch
@@ -306,19 +306,6 @@ fixed here; see https://github.com/magit/magit/pull/440."
                (string-match "^refs/heads/\\(.+\\)" remote-branch))
           (match-string 1 remote-branch)
         branch)))) ; always default to the local name
-
-(defun magit-pr-read-remote (&optional prompt def require-match)
-  (let* ((prompt (or prompt "Remote"))
-         (def (or def (magit-guess-remote)))
-         (remotes (magit-git-lines "remote"))
-
-         (reply (magit-completing-read (concat prompt ": ") remotes
-                                       nil require-match nil nil def)))
-    (if (string= reply "")
-        (if require-match
-            (error "No remote selected")
-          nil)
-      reply)))
 
 (defun magit-insert-status-line (title align string &rest args)
   (insert title ":" (make-string (max 1 (- align (length title))) 32)
