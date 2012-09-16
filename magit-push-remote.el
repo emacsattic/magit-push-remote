@@ -4,7 +4,7 @@
 
 ;; Author: Jonas Bernoulli <jonas@bernoul.li>
 ;; Created: 20120613
-;; Version: 0.2.0
+;; Version: 0.3.0
 ;; Status: beta
 ;; Package-Requires: ((magit "1.1.1"))
 ;; ^ actually the 'next' branch of magit is required
