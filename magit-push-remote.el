@@ -181,9 +181,10 @@ fixed here; see https://github.com/magit/magit/pull/440."
             auto-remote))
          (remote-branch
           (cond ((>= (prefix-numeric-value current-prefix-arg) 16)
-                 (magit-read-remote-branch
-                  used-remote
-                  (format "Push %s as branch" branch)))
+                 (concat "refs/heads/"
+                         (magit-read-remote-branch
+                          used-remote
+                          (format "Push %s as branch" branch))))
                 ((equal used-remote push-remote)
                  (magit-get-push-remote-branch branch))
                 ((equal used-remote pull-remote)
