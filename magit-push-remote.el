@@ -112,9 +112,6 @@
   (interactive)
   (setq magit-push-remote-debug (not magit-push-remote-debug)))
 
-(unless (fboundp 'magit-orig-push)
-  (fset 'magit-orig-push 'magit-push))
-
 ;; REDEFINE `magit-push-tags' DEFINED IN `magit.el'.
 ;;
 (magit-define-command push-tags ()
