@@ -294,9 +294,9 @@ fixed here; see https://github.com/magit/magit/pull/440."
         (run-hooks 'magit-refresh-status-hook)))))
 
 (defun magit-get-push-remote (branch)
-  (let ((remote (or (magit-get "branch" branch "pushremote")
-                    (car (member (magit-get "magit.defaultpushremote")
-                                 (magit-git-lines "remote"))))))
+  (let ((remote (car (member (or (magit-get "branch" branch "pushremote")
+                                 (magit-get "magit.defaultpushremote"))
+                             (magit-git-lines "remote")))))
     (if (string= remote "") nil remote)))
 
 (defun magit-get-push-remote-branch (branch)
