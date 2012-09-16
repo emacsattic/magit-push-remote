@@ -177,16 +177,17 @@ fixed here; see https://github.com/magit/magit/pull/440."
           (if (or current-prefix-arg
                   (not auto-remote))
               (magit-read-remote (format "Push %s to remote" branch)
-                                    auto-remote t)
+                                 auto-remote t)
             auto-remote))
          (remote-branch
-          (or (and (>= (prefix-numeric-value current-prefix-arg) 16)
-                   (magit-read-remote-branch
-                    used-remote (format "Push %s as branch" branch)))
-              (cond ((equal used-remote push-remote)
-                     (magit-get-push-remote-branch branch))
-                    ((equal used-remote pull-remote)
-                     (magit-get "branch" branch "merge"))))))
+          (cond ((>= (prefix-numeric-value current-prefix-arg) 16)
+                 (magit-read-remote-branch
+                  used-remote
+                  (format "Push %s as branch" branch)))
+                ((equal used-remote push-remote)
+                 (magit-get-push-remote-branch branch))
+                ((equal used-remote pull-remote)
+                 (magit-get "branch" branch "merge")))))
     (when magit-push-remote-debug
       (message "magit-push")
       (message "  branch:        %s" branch)
@@ -195,20 +196,19 @@ fixed here; see https://github.com/magit/magit/pull/440."
       (message "  auto-remote:   %s" auto-remote)
       (message "  used-remote:   %s" used-remote)
       (message "  remote-branch: %s" remote-branch))
+    (cond (remote-branch)
+          ((eq magit-set-upstream-on-push 'refuse)
+           (error "Not pushing since no upstream has been set."))
+          ((or (eq magit-set-upstream-on-push 'dontask)
+               (and (eq magit-set-upstream-on-push t)
+                    (yes-or-no-p "Set upstream while pushing? ")))
+           (setq magit-custom-options
+                 (cons "--set-upstream" magit-custom-options))))
     (apply 'magit-run-git-async "push" "-v" used-remote
            (if remote-branch
                (format "%s:%s" branch remote-branch)
              branch)
-           (cond (remote-branch
-                  magit-custom-options)
-                 ((eq magit-set-upstream-on-push 'refuse)
-                  (error "Not pushing since no upstream has been set."))
-                 ((or (eq magit-set-upstream-on-push 'dontask)
-                      (and (eq magit-set-upstream-on-push t)
-                           (yes-or-no-p "Set upstream while pushing? ")))
-                  (cons "--set-upstream" magit-custom-options))
-                 (t
-                  magit-custom-options)))))
+           magit-custom-options)))
 
 ;; REDEFINE `magit-refresh-status' DEFINED IN `magit.el'.
 ;;
