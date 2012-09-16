@@ -7,6 +7,7 @@
 ;; Version: 0.2.0
 ;; Status: beta
 ;; Package-Requires: ((magit "1.1.1"))
+;; ^ actually the 'next' branch of magit is required
 ;; Homepage: https://github.com/tarsius/magit-push-remote
 ;; Keywords: convenience
 
@@ -27,8 +28,6 @@
 ;; see <http://www.gnu.org/licenses/>.
 
 ;;; Commentary:
-
-;; WIP seems usable but don't complain if something goes wrong.
 
 ;; This plug-in provides support for an additional default remote
 ;; which when pushing is used instead of the "merge" default specified
@@ -58,29 +57,31 @@
 ;;   +------------+                                      +------------+
 
 ;; This package modifies magit to automatically detect whether the
-;; latter workflow is used and; if so provide additional information
-;; related to that "personal remote" and push it by default.
+;; latter workflow is used; and if so provide additional information
+;; related to that "personal" or "push" remote and push to it by
+;; default.
 
-;; Loading this library redefines the command `magit-push' which is a
-;; good thing because the official version contains several bugs; see
-;; https://github.com/magit/magit/pull/440.  It's behaviour differs
-;; from that of the official version even when no push remote exists
-;; in the current repository - it fixes the bugs.  The original
-;; version from `magit.el' is available as `magit-orig-push'.
+;; Loading this library redefines the commands `magit-push',
+;; `magit-push-tags', and `magit-refresh-status'.
 
-;; `magit-push-tags' is also redefined here to default to the push
-;; remote and explicit selection of the remote to be used.
+;; When `magit-push-remote-mode' is turned on and the repository has a
+;; push-remote `magit-push' and `magit-push-tags' now by default push
+;; to the push-remote.  Otherwise they behave mostly like the original
+;; versions defined in `magit.el'.  (The `magit-push' defined here
+;; actually differs a bit in that it is more carefull about when to
+;; --set-upstream.)
 
-;; The information displayed by `magit-refresh-status' is also changed
-;; by this plug-in - but only in repositories that actually have a
-;; push remote.  Therefor it is usually save to enable
-;; `magit-push-remote-mode' in all Magit buffers:
+;; When `magit-push-remote-mode' is turned on and the repository has a
+;; push-remote `magit-refresh-status' shows information related to
+;; both the push and pull (git's default) remote.  Otherwise it
+;; behaves like the version in `magit.el'.
+
+;; `magit-push-remote-mode' should be turned on in all Magit buffers;
 ;;
 ;;   (add-hook 'magit-mode-hook 'turn-on-magit-push-remote)
 
-;; The functions (re)defined here determine the push remote based on
-;; it's name.  A good name is e.g. your username.  Again it makes
-;; sense to set this globally:
+;; The push-remote is determined based on it's name.  A good name is
+;; e.g. your username.  Again it makes sense to set this globally:
 ;;
 ;;   git config --global magit.defaultpushremote <REMOTE_NAME>
 
@@ -117,14 +118,16 @@
 (magit-define-command push-tags ()
   "Push tags to a remote repository.
 
-Push tags to the current branch's remote.
+With a prefix argument or when the remote cannot be determined as
+described below ask the user what remote to push to.
 
-When `magit-push-remote-mode' is turned on and the current
-repository push to that remote instead.
+When `magit-push-remote-mode' is turned on and the repository has
+a push-remote push to that.  See `magit-push-remote-mode' for how
+the push-remote is determined.
 
-Otherwise push to \"origin\" or if that remote also doesn't exist
-but only a single remote is defined use that.  Otherwise or with
-a prefix argument ask the user what remote to use."
+Otherwise push to the remote specified by the git-config(1)
+option `branch.<name>.remote' if set; else \"origin\" if it
+exists; or if only one remote is configured use that."
   (interactive)
   (let* ((branch      (magit-get-current-branch))
          (remotes     (magit-git-lines "remote"))
@@ -146,26 +149,24 @@ a prefix argument ask the user what remote to use."
 (magit-define-command push ()
   "Push the current branch to a remote repository.
 
-With a single prefix argument ask the user what branch to push
-to.  With two or more prefix arguments also ask the user what
-remote to push to.  Otherwise determine the remote and branch as
-described below.  If the remote cannot be determined ask the
-user.  If the remote branch cannot be determined push without
-specifing the remote branch explicitly.
+With a single prefix argument ask the user what branch to push to.
+With two or more prefix arguments also ask the user what remote to
+push to.  Otherwise determine the remote and branch as described
+below.  If the remote cannot be determined ask the user.  If the
+remote branch cannot be determined push without specifing the remote
+branch explicitly.
 
-When `magit-push-remote-mode' is turned on and the current
-repository has a push-remote use that.  See the modes doc-string
-for how the push-remote is determined.
+When `magit-push-remote-mode' is turned on and the current repository
+has a push-remote use that.  See `magit-push-remote-mode' for how the
+push-remote is determined.
 
-Otherwise use the remote and branch specified by the
-git-config(1) options `branch.<name>.remote' and
-`branch.<name>.merge'.
+Otherwise use the remote and branch specified by the git-config(1)
+options `branch.<name>.remote' and `branch.<name>.merge'.
 
-This function is redefined in `magit-push-remote.el' replacing
-the original definition in `magit.el'.  It's behaviour differs
-even if `magit-push-remote-mode' is turned off.  These
-differences are due to bugs in the original implementation being
-fixed here; see https://github.com/magit/magit/pull/440."
+This function is redefined in `magit-push-remote.el' replacing the
+original definition in `magit.el'.  When `magit-push-remote-mode' is
+off or the repository has no push-remote then the only difference is
+that for older Git versions setting the upstream might not work."
   (interactive)
   (let* ((branch (or (magit-get-current-branch)
                      (error "Don't push a detached head.  That's gross")))
@@ -232,7 +233,7 @@ fixed here; see https://github.com/magit/magit/pull/440."
                (format "%s:%s" branch used-remote-branch)
              branch)
            magit-custom-options)
-    ;; In older Git versions (>= 1.6.6.1 ?) -u did set the remote but
+    ;; In older Git versions before 1.7.0 -u did set the remote but
     ;; not the remote branch.
     (when (and used-remote-branch (member "-u" magit-custom-options))
       (magit-set used-remote-branch "branch" branch "merge"))))
