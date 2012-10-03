@@ -71,9 +71,9 @@
 ;; --set-upstream.)
 
 ;; When `magit-push-remote-mode' is turned on and the repository has a
-;; push-remote `magit-refresh-status' shows information related to
-;; both the push and pull (git's default) remote.  Otherwise it
-;; behaves like the version in `magit.el'.
+;; push-remote `magit-status' shows information related to both the
+;; push and pull (git's default) remote.  Otherwise it behaves like
+;; the version in `magit.el'.
 
 ;; `magit-push-remote-mode' should be turned on in all Magit buffers;
 ;;
