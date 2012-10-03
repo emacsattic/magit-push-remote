@@ -6,8 +6,7 @@
 ;; Created: 20120613
 ;; Version: 0.3.0
 ;; Status: beta
-;; Package-Requires: ((magit "1.1.1"))
-;; ^ actually the 'next' branch of magit is required
+;; Package-Requires: ((magit "1.2.0"))
 ;; Homepage: https://github.com/tarsius/magit-push-remote
 ;; Keywords: convenience
 
