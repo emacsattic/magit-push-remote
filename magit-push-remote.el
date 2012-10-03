@@ -4,7 +4,7 @@
 
 ;; Author: Jonas Bernoulli <jonas@bernoul.li>
 ;; Created: 20120613
-;; Version: 0.3.0
+;; Version: 0.3.1
 ;; Status: beta
 ;; Package-Requires: ((magit "1.2.0"))
 ;; Homepage: https://github.com/tarsius/magit-push-remote
