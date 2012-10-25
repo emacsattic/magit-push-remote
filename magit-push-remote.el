@@ -321,10 +321,14 @@ that for older Git versions setting the upstream might not work."
         (run-hooks 'magit-refresh-status-hook)))))
 
 (defun magit-get-push-remote (branch)
-  (let ((remote (car (member (or (magit-get "branch" branch "pushremote")
-                                 (magit-get "magit.defaultpushremote"))
-                             (magit-git-lines "remote")))))
-    (if (string= remote "") nil remote)))
+  (let ((pull-remote (magit-get "branch" branch "remote"))
+        (push-remote
+         (car (member (or (magit-get "branch" branch "pushremote")
+                          (magit-get "magit.defaultpushremote"))
+                      (magit-git-lines "remote")))))
+    (unless (or (string= push-remote "")
+                (equal push-remote pull-remote))
+      push-remote)))
 
 (defun magit-get-push-remote-branch (branch)
   (let ((remote-branch (magit-get "branch" branch "push")))
