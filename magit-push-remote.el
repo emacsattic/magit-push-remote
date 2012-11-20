@@ -140,7 +140,7 @@ exists; or if only one remote is configured use that."
                           (and (= (length remotes) 1)
                                (car remotes)))))
     (when (or current-prefix-arg (not remote))
-      (setq remote (magit-read-remote "Push to remote" remote t)))
+      (setq remote (magit-read-remote "Push to remote" remote)))
     (magit-run-git-async "push" remote "--tags")))
 
 ;; REDEFINE `magit-push' DEFINED IN `magit.el'.
@@ -179,7 +179,7 @@ that for older Git versions setting the upstream might not work."
           (if (or current-prefix-arg
                   (not auto-remote))
               (magit-read-remote (format "Push %s to remote" branch)
-                                 auto-remote t)
+                                 auto-remote)
             auto-remote))
          (auto-remote-branch
           (cond ((equal used-remote push-remote)
