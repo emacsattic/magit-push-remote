@@ -1,11 +1,10 @@
 ;;; magit-push-remote.el --- push remote support for Magit
 
-;; Copyright (C) 2012  Jonas Bernoulli
+;; Copyright (C) 2012-2013  Jonas Bernoulli
 
 ;; Author: Jonas Bernoulli <jonas@bernoul.li>
 ;; Created: 20120613
-;; Version: 0.3.1
-;; Status: beta
+;; Version: 0.3.2
 ;; Package-Requires: ((magit "1.2.0"))
 ;; Homepage: https://github.com/tarsius/magit-push-remote
 ;; Keywords: convenience
