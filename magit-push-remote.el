@@ -263,8 +263,7 @@ that for older Git versions setting the upstream might not work."
              (no-commit (not head))
              (merge-heads (magit-file-lines (concat (magit-git-dir) "MERGE_HEAD")))
              (rebase (magit-rebase-info))
-             (staged (or no-commit (magit-anything-staged-p)))
-             (align (if push-remote 12 9)))
+             (staged (or no-commit (magit-anything-staged-p))))
         (when magit-push-remote-debug
           (message "magit-refresh-status")
           (message "  mode:               %s" magit-push-remote-mode)
@@ -280,22 +279,22 @@ that for older Git versions setting the upstream might not work."
         (when remote
           (if push-remote
               (progn
-                (magit-insert-status-line "Pull Remote" align remote-string)
-                (magit-insert-status-line "Push Remote" align push-remote-string))
-            (magit-insert-status-line "Remote" align remote-string)))
+                (magit-insert-status-line "Pull" remote-string)
+                (magit-insert-status-line "Push" push-remote-string))
+            (magit-insert-status-line "Merge" remote-string)))
         (magit-insert-status-line
-         "Local" align "%s %s"
+         "Local" "%s %s"
          (propertize (magit--bisect-info-for-status branch) 'face 'magit-branch)
          (abbreviate-file-name default-directory))
         (magit-insert-status-line
-         "Head" align (if no-commit "nothing commited (yet)" head))
+         "Head" (if no-commit "nothing commited (yet)" head))
         (when merge-heads
           (magit-insert-status-line
-           "Merging" align
+           "Merging"
            (mapconcat 'identity (mapcar 'magit-name-rev merge-heads) ", ")))
         (when rebase
           (apply 'magit-insert-status-line
-                 "Rebasing" align
+                 "Rebasing"
                  "onto %s (%s of %s); Press \"R\" to Abort, Skip, or Continue"
                  rebase))
         (insert "\n")
@@ -338,8 +337,8 @@ that for older Git versions setting the upstream might not work."
           (match-string 1 remote-branch)
         branch)))) ; always default to the local name
 
-(defun magit-insert-status-line (title align string &rest args)
-  (insert title ":" (make-string (max 1 (- align (length title))) 32)
+(defun magit-insert-status-line (title string &rest args)
+  (insert title ":" (make-string (max 1 (- 9 (length title))) 32)
           (apply 'format string args) "\n"))
 
 (magit-define-inserter push-remote-unpulled-commits (remote remote-branch)
