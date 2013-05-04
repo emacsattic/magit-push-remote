@@ -338,6 +338,44 @@ that for older Git versions setting the upstream might not work."
           (match-string 1 remote-branch)
         branch)))) ; always default to the local name
 
+(defun magit-get-pull-remote/branch (&optional branch verify)
+  "Return the remote-tracking branch of BRANCH used for pulling.
+Return a string of the form \"REMOTE/BRANCH\".
+
+If optional BRANCH is nil return the remote-tracking branch of
+the current branch.  If optional VERIFY is non-nil verify that
+the remote branch exists; else return nil."
+  (save-match-data
+    (let (remote remote-branch remote/branch)
+      (and (or branch (setq branch (magit-get-current-branch)))
+           (setq remote (magit-get "branch" branch "remote"))
+           (setq remote-branch (magit-get "branch" branch "merge"))
+           (string-match "^refs/heads/\\(.+\\)" remote-branch)
+           (setq remote/branch (concat remote "/"
+                                       (match-string 1 remote-branch)))
+           (or (not verify)
+               (= 0 (magit-git-exit-code "rev-parse" "--verify"
+                                         remote/branch)))
+           remote/branch))))
+
+(defun magit-get-push-remote/branch (&optional branch verify)
+  "Return the remote-tracking branch of BRANCH used for pushing.
+Return a string of the form \"REMOTE/BRANCH\".
+
+If optional BRANCH is nil return the remote-tracking branch of
+the current branch.  If optional VERIFY is non-nil verify that
+the remote branch exists; else return nil."
+  (progn
+    (let (remote remote-branch remote/branch)
+      (and (or branch (setq branch (magit-get-current-branch)))
+           (setq remote (magit-get-push-remote branch))
+           (setq remote-branch (magit-get-push-remote-branch branch))
+           (setq remote/branch (concat remote "/" remote-branch))
+           (or (not verify)
+               (= 0 (magit-git-exit-code "rev-parse" "--verify"
+                                         remote/branch)))
+           remote/branch))))
+
 (defun magit-insert-status-line (title string &rest args)
   (insert title ":" (make-string (max 1 (- 9 (length title))) 32)
           (apply 'format string args) "\n"))
