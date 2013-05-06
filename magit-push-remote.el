@@ -4,13 +4,13 @@
 
 ;; Author: Jonas Bernoulli <jonas@bernoul.li>
 ;; Created: 20120613
-;; Version: 0.3.2
+;; Version: 0.3.3
 ;; Package-Requires: ((magit "1.2.0"))
 ;; Homepage: https://github.com/tarsius/magit-push-remote
 ;; Keywords: convenience
 
-;; This file is not part of GNU Emacs.
 ;; This file is not part of Magit.
+;; This file is not part of GNU Emacs.
 
 ;; This file is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
