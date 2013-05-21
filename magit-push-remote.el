@@ -378,12 +378,6 @@ the remote branch exists; else return nil."
 
 (defvar magit-status-line-align-to 9)
 
-(defun magit-insert-status-line (keyword string &rest args)
-  (insert keyword ":"
-          (make-string (max 1 (- magit-status-line-align-to
-                                 (length keyword))) ?\ )
-          (apply 'format string args) "\n"))
-
 (magit-define-inserter push-remote-unpulled-commits (remote remote-branch)
   (when remote
     (apply #'magit-git-section
