@@ -289,6 +289,7 @@ that for older Git versions setting the upstream might not work."
          (abbreviate-file-name default-directory))
         (magit-insert-status-line
          "Head" (if no-commit "nothing commited (yet)" head))
+        (magit-insert-tag-status)
         (when merge-heads
           (magit-insert-status-line
            "Merging"
@@ -319,6 +320,32 @@ that for older Git versions setting the upstream might not work."
                push-remote push-remote-branch))
           (magit-insert-unpushed-commits remote remote-branch))
         (run-hooks 'magit-refresh-status-hook)))))
+
+(defun magit-insert-tag-status ()
+  (let* ((ctag (magit-get-current-tag t))
+         (ntag (magit-get-next-tag t))
+         (both (and ctag ntag t)))
+    (when (or ctag ntag)
+      (magit-insert-status-line
+       (if both "Tags" "Tag")
+       (concat
+        (and ctag
+             (concat
+              (propertize (car ctag) 'face 'magit-tag)
+              (and (> (cadr ctag) 0)
+                   (concat " ("
+                           (propertize (format "%s" (cadr ctag))
+                                       'face 'magit-branch)
+                           " behind)"))))
+        (and both ", ")
+        (and ntag
+             (concat
+              (propertize (car ntag) 'face 'magit-tag)
+              (and (> (cadr ntag) 0)
+                   (concat " ("
+                           (propertize (format "%s" (cadr ntag))
+                                       'face 'magit-tag)
+                           " ahead)")))))))))
 
 (defun magit-get-push-remote (branch)
   (let ((pull-remote (magit-get "branch" branch "remote"))
