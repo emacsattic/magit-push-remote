@@ -283,8 +283,7 @@ that for older Git versions setting the upstream might not work."
             (magit-insert-status-line "Merge" remote-string)))
         (magit-insert-status-line
          "Local"
-         (concat (propertize (or (ignore-errors (magit--bisect-info-for-status branch))
-                                 "##error##") ; FIXME
+         (concat (propertize (magit--bisect-info-for-status branch)
                              'face 'magit-branch)
                  " " (abbreviate-file-name default-directory)))
         (magit-insert-status-line
