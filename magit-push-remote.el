@@ -262,7 +262,7 @@ that for older Git versions setting the upstream might not work."
                  " " (abbreviate-file-name default-directory)))
         (magit-insert-status-line
          "Head" (if no-commit "nothing commited (yet)" head))
-        (magit-insert-tag-status)
+        (magit-insert-status-tags-line)
         (when merge-heads
           (magit-insert-status-line
            "Merging"
@@ -294,31 +294,36 @@ that for older Git versions setting the upstream might not work."
           (magit-insert-unpushed-commits remote remote-branch))
         (run-hooks 'magit-refresh-status-hook)))))
 
-(defun magit-insert-tag-status ()
-  (let* ((ctag (magit-get-current-tag t))
-         (ntag (magit-get-next-tag t))
-         (both (and ctag ntag t)))
-    (when (or ctag ntag)
-      (magit-insert-status-line
-       (if both "Tags" "Tag")
-       (concat
-        (and ctag
-             (concat
-              (propertize (car ctag) 'face 'magit-tag)
-              (and (> (cadr ctag) 0)
-                   (concat " ("
-                           (propertize (format "%s" (cadr ctag))
-                                       'face 'magit-branch)
-                           " behind)"))))
-        (and both ", ")
-        (and ntag
-             (concat
-              (propertize (car ntag) 'face 'magit-tag)
-              (and (> (cadr ntag) 0)
-                   (concat " ("
-                           (propertize (format "%s" (cadr ntag))
-                                       'face 'magit-tag)
-                           " ahead)")))))))))
+;; The next four expressions haven't made it into Magit yet.
+
+;; These aren't the default values that will be used in Magit.
+(defvar magit-status-insert-tags-line t)
+(defvar magit-status-tags-line-subject 'head)
+
+(defun magit-insert-status-tags-line ()
+  (when magit-status-insert-tags-line
+    (let* ((current-tag (magit-get-current-tag t))
+           (next-tag (magit-get-next-tag t))
+           (both-tags (and current-tag next-tag t))
+           (tag-subject (eq magit-status-tags-line-subject 'tag)))
+      (when (or current-tag next-tag)
+        (magit-insert-status-line
+         (if both-tags "Tags" "Tag")
+         (concat
+          (and current-tag (apply 'magit-format-status-tag-sentence
+                                  tag-subject current-tag))
+          (and both-tags ", ")
+          (and next-tag (apply 'magit-format-status-tag-sentence
+                               (not tag-subject) next-tag))))))))
+
+(defun magit-format-status-tag-sentence (behindp tag cnt &rest ignored)
+  (concat (propertize tag 'face 'magit-tag)
+          (and (> cnt 0)
+               (concat (if (eq magit-status-tags-line-subject 'tag)
+                           (concat " (" (propertize (format "%s" cnt)
+                                                    'face 'magit-branch))
+                         (format " (%i" cnt))
+                       " " (if behindp "behind" "ahead") ")"))))
 
 (defun magit-get-push-remote (branch)
   (let ((pull-remote (magit-get "branch" branch "remote"))
