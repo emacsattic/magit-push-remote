@@ -106,11 +106,6 @@
   "Unconditionally turn on `magit-push-remote-mode'."
   (magit-push-remote-mode 1))
 
-(defvar magit-push-remote-debug nil)
-(defun toggle-magit-push-remote-debug ()
-  (interactive)
-  (setq magit-push-remote-debug (not magit-push-remote-debug)))
-
 ;; REDEFINE `magit-push-tags' DEFINED IN `magit.el'.
 ;;
 (magit-define-command push-tags ()
@@ -217,15 +212,6 @@ that for older Git versions setting the upstream might not work."
           (and (eq magit-set-upstream-on-push t)
                (yes-or-no-p "Set upstream while pushing? ")))
       (setq magit-custom-options (cons "-u" magit-custom-options))))
-    (when magit-push-remote-debug
-      (message "magit-push")
-      (message "  branch:             %s" branch)
-      (message "  push-remote:        %s" push-remote)
-      (message "  pull-remote:        %s" pull-remote)
-      (message "  auto-remote:        %s" auto-remote)
-      (message "  used-remote:        %s" used-remote)
-      (message "  auto-remote-branch: %s" auto-remote-branch)
-      (message "  used-remote-branch: %s" used-remote-branch))
     (apply 'magit-run-git-async "push" "-v" used-remote
            (if used-remote-branch
                (format "%s:%s" branch used-remote-branch)
@@ -263,18 +249,6 @@ that for older Git versions setting the upstream might not work."
              (merge-heads (magit-file-lines (concat (magit-git-dir) "MERGE_HEAD")))
              (rebase (magit-rebase-info))
              (staged (or no-commit (magit-anything-staged-p))))
-        (when magit-push-remote-debug
-          (message "magit-refresh-status")
-          (message "  mode:               %s" magit-push-remote-mode)
-          (message "  branch:             %s" branch)
-          (message "  remote:             %s" remote)
-          (message "  remote-rebase:      %s" remote-rebase)
-          (message "  remote-branch:      %s" remote-branch)
-          (message "  remote-string:      %s" remote-string)
-          (message "  push-remote:        %s" push-remote)
-          (message "  push-remote-branch: %s" push-remote-branch)
-          (message "  push-remote-string: %s" push-remote-string)
-          (message "  head:               %s" head))
         (when remote
           (if push-remote
               (progn
