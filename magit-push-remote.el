@@ -4,7 +4,7 @@
 
 ;; Author: Jonas Bernoulli <jonas@bernoul.li>
 ;; Created: 20120613
-;; Version: 0.3.5
+;; Version: 0.4.0
 ;; Package-Requires: ((magit "1.3.0"))
 ;; Homepage: https://github.com/tarsius/magit-push-remote
 ;; Keywords: convenience
@@ -93,6 +93,7 @@
 ;;; Code:
 
 (require 'magit)
+(require 'magit-remote-utils)
 
 ;;;###autoload
 (define-minor-mode magit-push-remote-mode
@@ -334,52 +335,6 @@ that for older Git versions setting the upstream might not work."
     (unless (or (string= push-remote "")
                 (equal push-remote pull-remote))
       push-remote)))
-
-(defun magit-get-push-remote-branch (branch)
-  (let ((remote-branch (magit-get "branch" branch "push")))
-    (save-match-data
-      (if (and remote-branch
-               (string-match "^refs/heads/\\(.+\\)" remote-branch))
-          (match-string 1 remote-branch)
-        branch)))) ; always default to the local name
-
-(defun magit-get-pull-remote/branch (&optional branch verify)
-  "Return the remote-tracking branch of BRANCH used for pulling.
-Return a string of the form \"REMOTE/BRANCH\".
-
-If optional BRANCH is nil return the remote-tracking branch of
-the current branch.  If optional VERIFY is non-nil verify that
-the remote branch exists; else return nil."
-  (save-match-data
-    (let (remote remote-branch remote/branch)
-      (and (or branch (setq branch (magit-get-current-branch)))
-           (setq remote (magit-get "branch" branch "remote"))
-           (setq remote-branch (magit-get "branch" branch "merge"))
-           (string-match "^refs/heads/\\(.+\\)" remote-branch)
-           (setq remote/branch (concat remote "/"
-                                       (match-string 1 remote-branch)))
-           (or (not verify)
-               (= 0 (magit-git-exit-code "rev-parse" "--verify"
-                                         remote/branch)))
-           remote/branch))))
-
-(defun magit-get-push-remote/branch (&optional branch verify)
-  "Return the remote-tracking branch of BRANCH used for pushing.
-Return a string of the form \"REMOTE/BRANCH\".
-
-If optional BRANCH is nil return the remote-tracking branch of
-the current branch.  If optional VERIFY is non-nil verify that
-the remote branch exists; else return nil."
-  (progn
-    (let (remote remote-branch remote/branch)
-      (and (or branch (setq branch (magit-get-current-branch)))
-           (setq remote (magit-get-push-remote branch))
-           (setq remote-branch (magit-get-push-remote-branch branch))
-           (setq remote/branch (concat remote "/" remote-branch))
-           (or (not verify)
-               (= 0 (magit-git-exit-code "rev-parse" "--verify"
-                                         remote/branch)))
-           remote/branch))))
 
 (magit-define-inserter push-remote-unpulled-commits (remote remote-branch)
   (when remote
