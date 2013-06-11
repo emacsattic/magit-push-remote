@@ -381,8 +381,6 @@ the remote branch exists; else return nil."
                                          remote/branch)))
            remote/branch))))
 
-(defvar magit-status-line-align-to 9)
-
 (magit-define-inserter push-remote-unpulled-commits (remote remote-branch)
   (when remote
     (apply #'magit-git-section
