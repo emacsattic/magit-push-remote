@@ -4,7 +4,7 @@
 
 ;; Author: Jonas Bernoulli <jonas@bernoul.li>
 ;; Created: 20120613
-;; Version: 0.4.0
+;; Version: 0.4.1
 ;; Package-Requires: ((magit "1.3.0"))
 ;; Homepage: https://github.com/tarsius/magit-push-remote
 ;; Keywords: convenience
