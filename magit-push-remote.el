@@ -279,13 +279,13 @@ that for older Git versions setting the upstream might not work."
         (magit-insert-untracked-files)
         (magit-insert-pending-changes)
         (magit-insert-pending-commits)
-        (magit-insert-unpulled-commits remote remote-branch)
         (when magit-push-remote-mode
           (magit-insert-push-remote-unpulled-commits
            push-remote push-remote-branch))
         (magit-insert-unstaged-changes
          (if staged "Unstaged changes:" "Changes:"))
         (magit-insert-staged-changes staged no-commit)
+        (magit-insert-unpulled-commits remote remote-branch)
         (if push-remote
             (progn
               (magit-insert-pull-remote-unmerged-commits
