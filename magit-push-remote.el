@@ -240,14 +240,9 @@ that for older Git versions setting the upstream might not work."
              (push-remote-string (and push-remote
                                       (magit-remote-string
                                        push-remote push-remote-branch nil)))
-             (head (magit-git-string
-                    "log"
-                    "--max-count=1"
-                    "--abbrev-commit"
-                    (format "--abbrev=%s" magit-sha1-abbrev-length)
-                    "--pretty=oneline"))
+             (head (magit-format-commit "HEAD" "%h %s"))
              (no-commit (not head))
-             (merge-heads (magit-file-lines (concat (magit-git-dir) "MERGE_HEAD")))
+             (merge-heads (magit-file-lines (magit-git-dir "MERGE_HEAD")))
              (rebase (magit-rebase-info))
              (staged (or no-commit (magit-anything-staged-p))))
         (when remote
@@ -267,13 +262,19 @@ that for older Git versions setting the upstream might not work."
         (when merge-heads
           (magit-insert-status-line
            "Merging"
-           (mapconcat 'identity (mapcar 'magit-name-rev merge-heads) ", ")))
+           (concat
+            (mapconcat 'identity (mapcar 'magit-name-rev merge-heads) ", ")
+            "; Resolve conflicts, or press \"m A\" to Abort")))
         (when rebase
           (magit-insert-status-line
            "Rebasing"
            (apply 'format
                   "onto %s (%s of %s); Press \"R\" to Abort, Skip, or Continue"
-                  rebase)))
+                  rebase))
+          (when (nth 3 rebase)
+            (magit-insert-status-line
+             "Stopped"
+             (magit-format-commit (nth 3 rebase) "%h %s"))))
         (insert "\n")
         (magit-git-exit-code "update-index" "--refresh")
         (magit-insert-stashes)
@@ -283,9 +284,9 @@ that for older Git versions setting the upstream might not work."
         (when magit-push-remote-mode
           (magit-insert-push-remote-unpulled-commits
            push-remote push-remote-branch))
-        (magit-insert-unstaged-changes
-         (if staged "Unstaged changes:" "Changes:"))
-        (magit-insert-staged-changes staged no-commit)
+        (let ((staged (or no-commit (magit-anything-staged-p))))
+          (magit-insert-unstaged-changes)
+          (magit-insert-staged-changes staged no-commit))
         (magit-insert-unpulled-commits remote remote-branch)
         (if push-remote
             (progn
@@ -293,8 +294,8 @@ that for older Git versions setting the upstream might not work."
                remote remote-branch)
               (magit-insert-push-remote-unpushed-commits
                push-remote push-remote-branch))
-          (magit-insert-unpushed-commits remote remote-branch))
-        (run-hooks 'magit-refresh-status-hook)))))
+          (magit-insert-unpushed-commits remote remote-branch)))))
+  (run-hooks 'magit-refresh-status-hook))
 
 ;; The next four expressions haven't made it into Magit yet.
 
