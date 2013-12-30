@@ -109,7 +109,7 @@
 
 ;; REDEFINE `magit-push-tags' DEFINED IN `magit.el'.
 ;;
-(magit-define-command push-tags ()
+(defun magit-push-tags ()
   "Push tags to a remote repository.
 
 With a prefix argument or when the remote cannot be determined as
@@ -140,7 +140,7 @@ exists; or if only one remote is configured use that."
 
 ;; REDEFINE `magit-push' DEFINED IN `magit.el'.
 ;;
-(magit-define-command push ()
+(defun magit-push ()
   "Push the current branch to a remote repository.
 
 With a single prefix argument ask the user what branch to push to.
