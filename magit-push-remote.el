@@ -109,7 +109,7 @@
 
 ;; REDEFINE `magit-push-tags' DEFINED IN `magit.el'.
 ;;
-(magit-define-command push-tags ()
+(defun magit-push-tags ()
   "Push tags to a remote repository.
 
 With a prefix argument or when the remote cannot be determined as
@@ -140,7 +140,7 @@ exists; or if only one remote is configured use that."
 
 ;; REDEFINE `magit-push' DEFINED IN `magit.el'.
 ;;
-(magit-define-command push ()
+(defun magit-push ()
   "Push the current branch to a remote repository.
 
 With a single prefix argument ask the user what branch to push to.
@@ -338,7 +338,7 @@ that for older Git versions setting the upstream might not work."
                 (equal push-remote pull-remote))
       push-remote)))
 
-(magit-define-inserter push-remote-unpulled-commits (remote remote-branch)
+(defun magit-insert-push-remote-unpulled-commits (remote remote-branch)
   (when remote
     (apply #'magit-git-section
            'unpulled
@@ -356,11 +356,11 @@ that for older Git versions setting the upstream might not work."
            (append magit-git-log-options
                    (list (format "%s/%s..HEAD" remote remote-branch))))))
 
-(magit-define-inserter pull-remote-unmerged-commits (remote remote-branch)
+(defun magit-insert-pull-remote-unmerged-commits (remote remote-branch)
   (magit-insert-unpushed-commits-internal
    remote remote-branch "Unmerged commits:"))
 
-(magit-define-inserter push-remote-unpushed-commits (remote remote-branch)
+(defun magit-insert-push-remote-unpushed-commits (remote remote-branch)
   (magit-insert-unpushed-commits-internal
    remote remote-branch "Unpushed commits:"))
 
