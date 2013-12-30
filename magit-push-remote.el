@@ -338,7 +338,7 @@ that for older Git versions setting the upstream might not work."
                 (equal push-remote pull-remote))
       push-remote)))
 
-(magit-define-inserter push-remote-unpulled-commits (remote remote-branch)
+(defun magit-insert-push-remote-unpulled-commits (remote remote-branch)
   (when remote
     (apply #'magit-git-section
            'unpulled
@@ -356,11 +356,11 @@ that for older Git versions setting the upstream might not work."
            (append magit-git-log-options
                    (list (format "%s/%s..HEAD" remote remote-branch))))))
 
-(magit-define-inserter pull-remote-unmerged-commits (remote remote-branch)
+(defun magit-insert-pull-remote-unmerged-commits (remote remote-branch)
   (magit-insert-unpushed-commits-internal
    remote remote-branch "Unmerged commits:"))
 
-(magit-define-inserter push-remote-unpushed-commits (remote remote-branch)
+(defun magit-insert-push-remote-unpushed-commits (remote remote-branch)
   (magit-insert-unpushed-commits-internal
    remote remote-branch "Unpushed commits:"))
 
