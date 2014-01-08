@@ -53,36 +53,28 @@
 ;;   |            | <- merge pull reguest -------------- |            |
 ;;   +------------+                                      +------------+
 
-;; This package modifies magit to automatically detect whether the
+;; This package modifies Magit to automatically detect whether the
 ;; latter workflow is used; and if so provide additional information
 ;; related to that "personal" or "push" remote and push to it by
 ;; default.
 
 ;; When `magit-push-remote-mode' is turned on and the repository has a
 ;; push-remote `magit-push' and `magit-push-tags' now by default push
-;; to the push-remote.  Otherwise they behave like the original
-;; versions defined in `magit.el'.
+;; to the push-remote, and `magit-status' shows information related to
+;; both the push and pull (Git's default) remote.
 
-;; When `magit-push-remote-mode' is turned on and the repository has
-;; a push-remote `magit-status' shows information related to both the
-;; push and pull (Git's default) remote.  Otherwise it behaves like
-;; the version in `magit.el'.
+;; This is done by REDEFINING `magit-push-tags' and adding specialized
+;; functions to the hooks `magit-status-sections-hook' and
+;; `magit-push-hook'.
 
-;; `magit-push-remote-mode' should be turned on in all Magit buffers;
+;; To enable this turn on the global `magit-push-remote-mode' and
+;; select the push-remote either per repository or globally using the
+;; git variable `magit.pushremote' or `magit.defaultpushremote'.
 ;;
-;;   (add-hook 'magit-mode-hook 'turn-on-magit-push-remote)
-
-;; The push-remote is determined based on it's name.  A good name is
-;; e.g. your username.  Again it makes sense to set this globally:
+;;   (magit-push-remote-mode 1)
 ;;
-;;   git config --global magit.defaultpushremote <REMOTE_NAME>
-
-;; If you want to use a different name in some repositories, that is
-;; also possible:
-;;
+;;   git config --global magit.defaultpushremote <REMOTE_NAME>  # or
 ;;   git config magit.pushremote <REMOTE_NAME>
-
-;; Now read `magit-pushr-push's doc-string and you are ready to go.
 
 ;;; Code:
 
@@ -91,33 +83,30 @@
 ;;;###autoload
 (define-minor-mode magit-push-remote-mode
   "Push remote support for Magit."
-  :lighter "" :require 'magit-push-remote
+  :lighter ""
+  :require 'magit-push-remote
+  :global t
   (or (derived-mode-p 'magit-mode)
       (error "This mode only makes sense with Magit"))
   (cond
    (magit-push-remote-mode
     (magit-add-section-hook 'magit-status-sections-hook
                             'magit-pushr-insert-remote
-                            'magit-insert-status-remote-line t t)
+                            'magit-insert-status-remote-line t)
     (magit-add-section-hook 'magit-status-sections-hook
                             'magit-pushr-insert-unpulled
-                            'magit-insert-unpulled-commits t t)
+                            'magit-insert-unpulled-commits t)
     (magit-add-section-hook 'magit-status-sections-hook
                             'magit-pushr-insert-unpushed
-                            'magit-insert-unpulled-commits t t)
+                            'magit-insert-unpulled-commits t)
     (magit-add-section-hook 'magit-push-hook
                             'magit-pushr-push
-                            'magit-push-dwim nil t))
+                            'magit-push-dwim))
    (t
-    (remove-hook 'magit-status-sections-hook 'magit-pushr-insert-remote   t)
-    (remove-hook 'magit-status-sections-hook 'magit-pushr-insert-unpulled t)
-    (remove-hook 'magit-status-sections-hook 'magit-pushr-insert-unpushed t)
-    (remove-hook 'magit-push-hook 'magit-pushr-push t))))
-
-;;;###autoload
-(defun turn-on-magit-push-remote ()
-  "Unconditionally turn on `magit-push-remote-mode'."
-  (magit-push-remote-mode 1))
+    (remove-hook 'magit-status-sections-hook 'magit-pushr-insert-remote)
+    (remove-hook 'magit-status-sections-hook 'magit-pushr-insert-unpulled)
+    (remove-hook 'magit-status-sections-hook 'magit-pushr-insert-unpushed)
+    (remove-hook 'magit-push-hook 'magit-pushr-push))))
 
 ;; REDEFINE `magit-push-tags' DEFINED IN `magit.el'.
 ;;
