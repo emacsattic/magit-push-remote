@@ -69,11 +69,11 @@
 
 ;; To enable this turn on the global `magit-push-remote-mode' and
 ;; select the push-remote either per repository or globally using the
-;; git variable `magit.pushremote' or `magit.defaultpushremote'.
+;; git variable `magit.pushremote'.
 ;;
 ;;   (magit-push-remote-mode 1)
 ;;
-;;   git config --global magit.defaultpushremote <REMOTE_NAME>  # or
+;;   git config --global magit.pushremote <REMOTE_NAME>  # or
 ;;   git config magit.pushremote <REMOTE_NAME>
 
 ;;; Code:
