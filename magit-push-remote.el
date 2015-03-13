@@ -86,8 +86,6 @@
   :lighter ""
   :require 'magit-push-remote
   :global t
-  (or (derived-mode-p 'magit-mode)
-      (error "This mode only makes sense with Magit"))
   (cond
    (magit-push-remote-mode
     (magit-add-section-hook 'magit-status-sections-hook
