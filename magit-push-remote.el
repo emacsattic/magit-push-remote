@@ -239,7 +239,7 @@ options `branch.<name>.remote' and `branch.<name>.merge'."
   (let ((pull-remote (magit-get "branch" branch "remote"))
         (push-remote
          (car (member (or (magit-get "branch" branch "pushremote")
-                          (magit-get "magit.defaultpushremote"))
+                          (magit-get "magit.pushremote"))
                       (magit-git-lines "remote")))))
     (unless (or (string= push-remote "")
                 (equal push-remote pull-remote))
