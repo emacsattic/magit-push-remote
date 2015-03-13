@@ -75,6 +75,13 @@
 ;;
 ;;   git config --global magit.pushremote <REMOTE_NAME>  # or
 ;;   git config magit.pushremote <REMOTE_NAME>
+;;
+;; Git already provides a variable for the same purpose, which is
+;; also supported, but note that setting that also Git, but at least
+;; currently does not affect regular Magit push commands
+;;
+;;   git config --global remote.pushdefault <REMOTE_NAME>  # or
+;;   git config remote.pushdefault <REMOTE_NAME>
 
 ;;; Code:
 
@@ -239,7 +246,8 @@ options `branch.<name>.remote' and `branch.<name>.merge'."
   (let ((pull-remote (magit-get "branch" branch "remote"))
         (push-remote
          (car (member (or (magit-get "branch" branch "pushremote")
-                          (magit-get "magit.pushremote"))
+                          (magit-get "magit.pushremote")
+                          (magit-get "remote.pushdefault"))
                       (magit-git-lines "remote")))))
     (unless (or (string= push-remote "")
                 (equal push-remote pull-remote))
